@@ -1,0 +1,50 @@
+# myapp/models.py
+from django.db import models
+
+class Product(models.Model):
+    title = models.CharField(max_length=100)
+    description = models.TextField()
+    price = models.DecimalField(max_digits=10, decimal_places=2)
+    image = models.ImageField(upload_to='product_images/')
+
+    def __str__(self):
+        return self.title
+
+
+# myapp/views.py
+from django.shortcuts import render
+from .models import Product
+
+def product_list(request):
+    products = Product.objects.all()
+    return render(request, 'myapp/product_list.html', {'products': products})
+
+
+# myapp/templates/myapp/product_list.html
+{% for product in products %}
+    <div>
+        <h3>{{ product.title }}</h3>
+        <p>{{ product.description }}</p>
+        <p>Price: {{ product.price }}</p>
+        <img src="{{ product.image.url }}" alt="{{ product.title }}">
+        <hr>
+    </div>
+{% endfor %}
+
+
+# urls.py
+from django.urls import path
+from . import views
+
+urlpatterns = [
+    path('products/', views.product_list, name='product_list'),
+    # ...
+]
+
+
+# settings.py
+INSTALLED_APPS = [
+    # ...
+    'myapp',
+    # ...
+]
